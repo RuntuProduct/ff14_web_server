@@ -1,9 +1,11 @@
 // 路由规则存放目录
+const upload = require('./upload');
 const user = require('./user');
 const job = require('./job');
+const product = require('./product');
 
 module.exports = function(app){
-    app.get('/', function (req, res) {
+    app.get('/', (req, res, next) => {
       res.render('./index.html');
     });
 
@@ -15,8 +17,10 @@ module.exports = function(app){
       next();
     })
 
-    app.use('/api/user', user)
+    app.use('/api/upload', upload);
+    app.use('/api/user', user);
     app.use('/api/job', job);
+    app.use('/api/product', product);
     // app.use('/api/log', log);
     // app.use('/api/sup', sup);
     // app.use('/api/med', med);

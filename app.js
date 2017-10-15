@@ -32,8 +32,6 @@ app.use(express.static(path.join(__dirname, 'uploads')));
 require('./server/routes')(app);
 
 if (isDev) {
-  app.use('/sta', express.static('editor')); //查看api文档
-
   // add "reload" to express, see: https://www.npmjs.com/package/reload
   var reload = require('reload');
   var http = require('http');

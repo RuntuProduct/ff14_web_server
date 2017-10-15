@@ -26,6 +26,8 @@ router.get('/', (req, res) => {
         connection.query(jobSQL.count, (err, count) => {
           if (err) { throw err }
           const total = count[0]['total']
+          // 释放连接池
+          connection.release();
           return dealRes(res, 0, {
             list: result,
             current: page,
@@ -33,8 +35,6 @@ router.get('/', (req, res) => {
             total,
           });
         })
-        // 释放连接池
-        connection.release();
       })
     });
   } catch(e) {
@@ -42,31 +42,33 @@ router.get('/', (req, res) => {
   }
 })
 
-router.post('/login', (req, res, next) => {
-  const { username, password } = req.body;
-
+// 根据职业名称或是职业类别（01-大地使者、02-能工巧匠）来搜索职业
+router.get('/query', (req, res) => {
+  const { value } = req.query
+  // 判断有无职业关键字
+  let type
+  const match01 = value.match(/^['大','地','使','者']+$/)
+  const match02 = value.match(/^['能','工','巧','匠']+$/)
+  if (match01) {
+    type = ['01']
+  } else if (match02) {
+    type = ['02']
+  } else {
+    type = ['none']
+  }
   try {
-    // 从连接池获取连接
     pool.getConnection((err, connection) => {
-      connection.query(jobSQL.userLogin, [username, password], (err, result) => {
-        if (result && result.length) {
-          const user = result[0]
-          delete user.pwd
-          res.cookie('uidSave', user.id, {
-            expires: new Date(Date.now() + (10 * 60000)), // 分钟
-            httpOnly: false,
-          })
-          return dealRes(res, 0, user)
-        } else {
-          return dealRes(res, 1, '用户不存在！')
-        }
+      if (err) { throw err }
+      const query = "%" + value + "%"
+      connection.query(jobSQL.queryValue, [query, type], (err, result) => {
+        if (err) { throw err }
         // 释放连接池
         connection.release();
-      }) 
-    })
+        return dealRes(res, 0, result);
+      });
+    });
   } catch(e) {
-    // console.log(e)
-    return dealRes(res, 1, 'internal error')
+    return dealRes(res, 1, 'internal error');
   }
 })
 

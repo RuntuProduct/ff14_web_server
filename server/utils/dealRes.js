@@ -3,12 +3,14 @@ let dealRes = (res, code, data) => {
     return res.send({
       code: code,
       status: 'error',
-      data: data,
+      message: data,
+      data: null,
     })
   } else {
     return res.send({
       code: 200,
       status: 'success',
+      message: 'success',
       data: data,
     })
   }

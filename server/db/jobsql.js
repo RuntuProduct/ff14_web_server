@@ -2,8 +2,7 @@ var JobSQL = {
   insert: 'INSERT INTO User(uid,userName) VALUES(?,?)', 
   queryPage: 'SELECT * FROM Job LIMIT ?,?',
   count: 'SELECT COUNT(*) AS total FROM Job',
-  getUserById: 'SELECT * FROM Job WHERE id = ? ',
-  userLogin: 'SELECT * FROM User WHERE ( account = ? AND pwd = ? )',
+  queryValue: "SELECT * FROM Job WHERE name LIKE ? OR type In (?)",
 };
 
 module.exports = JobSQL;
