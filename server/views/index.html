@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>药品采购平台</title>
+  <style>
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+    .main {
+      width: 600px;
+      margin: 0 auto;
+      padding-top: 200px;
+    }
+    .tit {
+      text-align: center;
+    }
+    .tab {
+      margin-top: 40px;
+      height: 60px;
+      line-height: 60px;
+      background-color: #efefef;
+      border-radius: 5px;
+      overflow: hidden;
+    }
+    .tab:after {
+      content: '';
+      clear: both;
+    }
+    .tab li {
+      width: 33.33%;
+      float: left;
+    }
+    .tab li a {
+      display: inline-block;
+      width: 100%;
+      text-align: center;
+      color: #1989FA;
+      text-decoration: none;
+    }
+    .tab li a:hover {
+      background-color: #1989FA;
+      color: #fff;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+
+<div class="main">
+  <h2 class="tit">请根据您的身份选择你要登录的客户端</h2>
+  <ul class="tab">
+    <li><a href="/admin">后台管理端</a></li>
+    <li><a href="/med">医疗机构端</a></li>
+    <li><a href="/sup">供应商端</a></li>
+  </ul>
+</div>
+
+</body>
+</html>

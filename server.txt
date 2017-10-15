@@ -1,0 +1,12 @@
+卷 编程 的文件夹 PATH 列表
+卷序列号为 6203-4BC8
+E:\WORK\YPCG\SERVER-SAVE
+│  app.js（服务器根文件）
+│  db_settings.js（数据库设置文件）
+│  package.json（包描述文件）
+├─dist(前端生成的静态文件)          
+├─server
+│  ├─models（数据库数据模型文件）
+│  ├─routes（各接口逻辑文件）
+│  ├─utils（公用函数）  
+│  └─views（各子系统入口文件）   
