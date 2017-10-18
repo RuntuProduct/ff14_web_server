@@ -3,6 +3,7 @@ const upload = require('./upload');
 const user = require('./user');
 const job = require('./job');
 const product = require('./product');
+const material = require('./material');
 
 module.exports = function(app){
     app.get('/', (req, res, next) => {
@@ -21,6 +22,7 @@ module.exports = function(app){
     app.use('/api/user', user);
     app.use('/api/job', job);
     app.use('/api/product', product);
+    app.use('/api/material', material);
     // app.use('/api/log', log);
     // app.use('/api/sup', sup);
     // app.use('/api/med', med);
