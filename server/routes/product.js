@@ -10,7 +10,7 @@ const pool = mysql.createPool(dbConfig.mysql);
 
 // 获取分页
 router.get('/', (req, res) => {
-  let { page, pageSize } = req.query;
+  let { page, pageSize, name, jobId } = req.query;
   page = parseInt(page, 10)
   pageSize = parseInt(pageSize, 10)
 
@@ -18,10 +18,23 @@ router.get('/', (req, res) => {
     return dealRes(res, 1, '分页信息错误！')
   }
 
+  let sName
+  if (name) {
+    sName = "%" + name + "%"
+  } else {
+    sName = "%"
+  }
+  let sJob
+  if (jobId) {
+    sJob = [jobId]
+  } else {
+    sJob = [4, 5, 6, 7, 8, 9, 10, 11]
+  }
+
   try {
     pool.getConnection((err, connection) => {
       if (err) { throw err }
-      connection.query(productSQL.queryPage, [(page - 1) * pageSize, pageSize], (err, result) => {
+      connection.query(productSQL.queryPage, [sName, sJob, (page - 1) * pageSize, pageSize], (err, result) => {
         if (err) { throw err }
         connection.query(productSQL.count, (err, count) => {
           if (err) { throw err }

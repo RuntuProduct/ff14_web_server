@@ -10,9 +10,22 @@ const pool = mysql.createPool(dbConfig.mysql);
 
 // 获取分页
 router.get('/', (req, res) => {
-  let { page, pageSize } = req.query;
+  let { page, pageSize, name, getType } = req.query;
   page = parseInt(page, 10)
   pageSize = parseInt(pageSize, 10)
+
+  let sName
+  if (name) {
+    sName = "%" + name + "%"
+  } else {
+    sName = "%"
+  }
+  let sType
+  if (parseInt(getType, 10) > 0 && parseInt(getType, 10) <= 4) {
+    sType = [getType]
+  } else {
+    sType = ['01', '02', '03', '04']
+  }
 
   if (!page || !pageSize) {
     return dealRes(res, 1, '分页信息错误！')
@@ -21,7 +34,7 @@ router.get('/', (req, res) => {
   try {
     pool.getConnection((err, connection) => {
       if (err) { throw err }
-      connection.query(materialSQL.queryPage, [(page - 1) * pageSize, pageSize], (err, result) => {
+      connection.query(materialSQL.queryPage, [sName, sType, (page - 1) * pageSize, pageSize], (err, result) => {
         if (err) { throw err }
         connection.query(materialSQL.count, (err, count) => {
           if (err) { throw err }
@@ -42,18 +55,27 @@ router.get('/', (req, res) => {
   }
 })
 
-// 添加作物
+// 添加材料
 router.post('/', (req, res) => {
-  let { name, img, jobId, difficulty, stamina } = req.body;
+  let { name, img, getType } = req.body;
 
-  if (!name || parseInt(jobId, 10) != jobId || jobId == 0) {
-    return dealRes(res, 1, '作物信息错误！')
+  if (!name || !getType) {
+    return dealRes(res, 1, '材料信息错误！')
+  }
+
+  let jobId
+  if (getType === '01' || getType === '02') {
+    jobId = 2
+  } else if (getType === '03' || getType === '04') {
+    jobId = 3
+  } else {
+    return dealRes(res, 1, '材料信息错误！')
   }
 
   try {
     pool.getConnection((err, connection) => {
       if (err) { throw err }
-      connection.query(materialSQL.insert, [name, img, jobId, difficulty, stamina], (err, result) => {
+      connection.query(materialSQL.insert, [name, img, jobId, getType], (err, result) => {
         if (err) { throw err }
         // 释放连接池
         connection.release();
@@ -65,18 +87,28 @@ router.post('/', (req, res) => {
   }
 })
 
-// 编辑作物
+// 编辑材料
 router.put('/', (req, res) => {
-  let { id, name, img, jobId, difficulty, stamina } = req.body;
+  let { id, name, img, getType } = req.body;
+  console.log(req.body)
 
-  if (!id || !name || parseInt(jobId, 10) != jobId || jobId == 0) {
-    return dealRes(res, 1, '作物信息错误！')
+  if (id == undefined || !name || !getType) {
+    return dealRes(res, 1, '材料信息错误！')
+  }
+
+  let jobId
+  if (getType === '01' || getType === '02') {
+    jobId = 2
+  } else if (getType === '03' || getType === '04') {
+    jobId = 3
+  } else {
+    return dealRes(res, 1, '材料信息错误！')
   }
 
   try {
     pool.getConnection((err, connection) => {
       if (err) { throw err }
-      connection.query(materialSQL.update, [name, img, parseInt(jobId, 10), difficulty, stamina, id], (err, result) => {
+      connection.query(materialSQL.update, [name, img, parseInt(jobId, 10), getType, id], (err, result) => {
         if (err) { throw err }
         // 释放连接池
         connection.release();
@@ -88,11 +120,11 @@ router.put('/', (req, res) => {
   }
 })
 
-// 删除作物
+// 删除材料
 router.delete('/', (req, res) => {
   let { id } = req.body;
   if (!id) {
-    return dealRes(res, 1, '作物信息错误！')
+    return dealRes(res, 1, '材料信息错误！')
   }
   try {
     pool.getConnection((err, connection) => {
