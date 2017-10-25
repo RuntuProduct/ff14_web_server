@@ -8,9 +8,29 @@ const dealRes = require('../utils/dealRes')
 // 使用数据库配置信息创建一个MySQL链接池
 const pool = mysql.createPool(dbConfig.mysql);
 
-// router.get('/', (req, res) => {
-//   let { pid }
-// })
+router.get('/', (req, res) => {
+  let { pid } = req.query
+
+  if (pid == undefined) {
+    return dealRes(res, 1, 'pid参数错误！')
+  }
+
+  try {
+    pool.getConnection((err, connection) => {
+      if (err) throw err
+      connection.query(formulaSQL.query, [`%${pid}%`], (err, result) => {
+        if (err) throw err
+        // 释放连接池
+        connection.release()
+        return dealRes(res, 0, {
+          list: result,
+        })
+      })
+    })
+  } catch(e) {
+    return dealRes(res, 1, 'internal error')
+  }
+})
 
 router.post('/', (req, res) => {
   let { pid, tarId, tarType, num } = req.body
@@ -22,7 +42,7 @@ router.post('/', (req, res) => {
   try {
     pool.getConnection((err, connection) => {
       if (err) throw err
-      connection.query(formulaSQL.query, [pid, tarId, tarType], (err, result) => {
+      connection.query(formulaSQL.compare, [pid, tarId, tarType], (err, result) => {
         if (err) throw err
         console.log(result)
         // 判断要添加的元素是否存在
