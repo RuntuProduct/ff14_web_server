@@ -57,16 +57,16 @@ router.get('/', (req, res) => {
 
 // 添加作物
 router.post('/', (req, res) => {
-  let { name, img, jobId, difficulty, stamina } = req.body;
+  let { name, img, jobId, level, difficulty, stamina } = req.body;
 
-  if (!name || parseInt(jobId, 10) != jobId || jobId == 0) {
+  if (!name || parseInt(jobId, 10) != jobId || jobId == 0 || !level) {
     return dealRes(res, 1, '作物信息错误！')
   }
 
   try {
     pool.getConnection((err, connection) => {
       if (err) { throw err }
-      connection.query(productSQL.insert, [name, img, jobId, difficulty, stamina], (err, result) => {
+      connection.query(productSQL.insert, [name, img, jobId, level, difficulty, stamina], (err, result) => {
         if (err) { throw err }
         // 释放连接池
         connection.release();
@@ -80,16 +80,16 @@ router.post('/', (req, res) => {
 
 // 编辑作物
 router.put('/', (req, res) => {
-  let { id, name, img, jobId, difficulty, stamina } = req.body;
+  let { id, name, img, jobId, level, difficulty, stamina } = req.body;
 
-  if (!id || !name || parseInt(jobId, 10) != jobId || jobId == 0) {
+  if (!id || !name || parseInt(jobId, 10) != jobId || jobId == 0 || !level) {
     return dealRes(res, 1, '作物信息错误！')
   }
 
   try {
     pool.getConnection((err, connection) => {
       if (err) { throw err }
-      connection.query(productSQL.update, [name, img, parseInt(jobId, 10), difficulty, stamina, id], (err, result) => {
+      connection.query(productSQL.update, [name, img, parseInt(jobId, 10), level, difficulty, stamina, id], (err, result) => {
         if (err) { throw err }
         // 释放连接池
         connection.release();
