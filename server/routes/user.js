@@ -49,6 +49,38 @@ const rbacPrivileges = [
     privilegeName: '鱼类设置',
     remark: 'remark',
   },
+  {
+    privilegeId: 6,
+    menu: '01',
+    levelId: '002',
+    path: '/notes',
+    privilegeName: '各类笔记',
+    remark: 'remark',
+  },
+  {
+    privilegeId: 7,
+    menu: '01',
+    levelId: '002001',
+    path: '/notes/product',
+    privilegeName: '制作笔记',
+    remark: 'remark',
+  },
+  {
+    privilegeId: 8,
+    menu: '01',
+    levelId: '002002',
+    path: '/notes/gather',
+    privilegeName: '采集笔记',
+    remark: 'remark',
+  },
+  {
+    privilegeId: 9,
+    menu: '01',
+    levelId: '002003',
+    path: '/notes/fish',
+    privilegeName: '钓鱼笔记',
+    remark: 'remark',
+  },
 ];
 
 router.get('/login', (req, res) => {
