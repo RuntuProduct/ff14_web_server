@@ -72,4 +72,27 @@ router.post('/', (req, res) => {
   }
 })
 
+// 编辑
+router.put('/', (req, res) => {
+  let { id, name, img } = req.body
+
+  if (id == undefined || !name) {
+    return dealRes(res, 1, '材料信息错误！')
+  }
+
+  try {
+    pool.getConnection((err, connection) => {
+      if (err) throw err
+      connection.query(fishSQL.update, [name, img, id], (err, result) => {
+        if (err) throw err
+        // 释放连接池
+        connection.release()
+        return dealRes(res, 0, '修改成功')
+      })
+    })
+  } catch (e) {
+    return dealRes(res, 1, 'internal error')
+  }
+})
+
 module.exports = router

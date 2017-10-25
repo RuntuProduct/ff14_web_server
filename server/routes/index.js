@@ -5,6 +5,7 @@ const job = require('./job');
 const product = require('./product');
 const material = require('./material');
 const fish = require('./fish');
+const formula = require('./formula');
 
 module.exports = function(app){
     app.get('/', (req, res, next) => {
@@ -25,6 +26,7 @@ module.exports = function(app){
     app.use('/api/product', product);
     app.use('/api/material', material);
     app.use('/api/fish', fish);
+    app.use('/api/formula', formula);
     // app.use('/api/log', log);
     // app.use('/api/sup', sup);
     // app.use('/api/med', med);
