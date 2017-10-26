@@ -1,5 +1,5 @@
 var JobSQL = {  
-  insert: 'INSERT INTO Product(name, img, jobId, level, difficulty, stamina) VALUES(?,?,?,?,?)',
+  insert: 'INSERT INTO Product(name, img, jobId, level, difficulty, stamina) VALUES(?,?,?,?,?,?)',
   update: 'UPDATE Product SET name = ?, img = ?, jobId = ?, level = ?, difficulty = ?, stamina = ? WHERE id = ?',
   delete: 'DELETE FROM Product WHERE id = ?',
   queryPage: 'SELECT p.id, p.name, p.img, p.jobId, p.level, p.difficulty, p.stamina, '
