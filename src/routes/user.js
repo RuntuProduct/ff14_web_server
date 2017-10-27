@@ -1,12 +1,12 @@
-const express = require('express');
-const router = express.Router();
-const mysql = require('mysql');
-const dbConfig = require('../db/config');
-const userSQL = require('../db/usersql');
-const dealRes = require('../utils/dealRes');
+import express from 'express'
+import mysql from 'mysql'
+import dbConfig from '../db/config'
+import userSQL from '../db/usersql'
+import dealRes from '../utils/dealRes'
 
+const router = express.Router()
 // 使用数据库配置信息创建一个MySQL链接池
-const pool = mysql.createPool(dbConfig.mysql);
+const pool = mysql.createPool(dbConfig.mysql)
 
 const rbacPrivileges = [
   {
@@ -81,37 +81,40 @@ const rbacPrivileges = [
     privilegeName: '钓鱼笔记',
     remark: 'remark',
   },
-];
+]
 
 router.get('/login', (req, res) => {
-  const { uid } = req.query;
+  const { uid } = req.query
 
   try {
     pool.getConnection((err, connection) => {
-      connection.query(userSQL.getUserById, [uid], (err, result) => {
+      connection.query(userSQL.getUserById, [uid], (err1, result) => {
+        if (err1) throw new Error(err1)
         if (result && result.length) {
           const user = result[0]
           delete user.pwd
-          return dealRes(res, 0, { user, rbacPrivileges });
-        } else {
-          return dealRes(res, 1, '用户不存在，请重新登录！');
+          // 释放连接池
+          connection.release()
+          return dealRes(res, 0, { user, rbacPrivileges })
         }
         // 释放连接池
-        connection.release();
+        connection.release()
+        return dealRes(res, 1, '用户不存在，请重新登录！')
       })
-    });
-  } catch(e) {
-    return dealRes(res, 1, 'internal error');
+    })
+  } catch (e) {
+    return dealRes(res, 1, 'internal error')
   }
 })
 
 router.post('/login', (req, res, next) => {
-  const { username, password } = req.body;
+  const { username, password } = req.body
 
   try {
     // 从连接池获取连接
     pool.getConnection((err, connection) => {
-      connection.query(userSQL.userLogin, [username, password], (err, result) => {
+      connection.query(userSQL.userLogin, [username, password], (err1, result) => {
+        if (err1) throw new Error(err1)
         if (result && result.length) {
           const user = result[0]
           delete user.pwd
@@ -120,17 +123,16 @@ router.post('/login', (req, res, next) => {
             httpOnly: false,
           })
           return dealRes(res, 0, { user, rbacPrivileges })
-        } else {
-          return dealRes(res, 1, '用户不存在！')
         }
         // 释放连接池
-        connection.release();
-      }) 
+        connection.release()
+        return dealRes(res, 1, '用户不存在！')
+      })
     })
-  } catch(e) {
+  } catch (e) {
     // console.log(e)
     return dealRes(res, 1, 'internal error')
   }
 })
 
-module.exports = router;
+export default router

@@ -1,24 +1,25 @@
-const express = require('express')
-const router = express.Router()
-const mysql = require('mysql')
-const dbConfig = require('../db/config')
-const fishSQL = require('../db/fishSQL')
-const dealRes = require('../utils/dealRes')
+import express from 'express'
+import mysql from 'mysql'
+import dbConfig from '../db/config'
+import fishSQL from '../db/fishSQL'
+import dealRes from '../utils/dealRes'
 
+const router = express.Router()
 // 使用数据库配置信息创建一个MySQL连接池
 const pool = mysql.createPool(dbConfig.mysql)
 
 // 获取分页
 router.get('/', (req, res) => {
-  let { page, pageSize, name, img } = req.query
+  let { page, pageSize } = req.query
+  const { name } = req.query
   page = parseInt(page, 10)
   pageSize = parseInt(pageSize, 10)
 
   let sName
   if (name) {
-    sName = "%" + name + "%"
+    sName = `%${name}%`
   } else {
-    sName = "%"
+    sName = '%'
   }
 
   if (!page || !pageSize) {
@@ -26,15 +27,15 @@ router.get('/', (req, res) => {
   }
 
   try {
-    pool.getConnection((err, connection) => {
-      if (err) throw err
-      connection.query(fishSQL.queryPage, [sName, (page - 1) * pageSize, pageSize], (err, result) => {
-        if (err) throw err
-        connection.query(fishSQL.count, (err, count) => {
-          if (err) throw err
+    pool.getConnection((err1, connection) => {
+      if (err1) throw err1
+      connection.query(fishSQL.queryPage, [sName, (page - 1) * pageSize, pageSize], (err2, result) => {
+        if (err2) throw err2
+        connection.query(fishSQL.count, (err3, count) => {
+          if (err3) throw err3
           // 释放连接池
           connection.release()
-          const total = count[0]['total']
+          const { total } = count[0]
           return dealRes(res, 0, {
             list: result,
             current: page,
@@ -44,24 +45,24 @@ router.get('/', (req, res) => {
         })
       })
     })
-  } catch(e) {
+  } catch (e) {
     return dealRes(res, 1, 'internal error')
   }
 })
 
 // 添加鱼类
 router.post('/', (req, res) => {
-  let { name, img } = req.body
+  const { name, img } = req.body
 
   if (!name) {
     return dealRes(res, 1, '材料信息错误！')
   }
 
   try {
-    pool.getConnection((err, connection) => {
-      if (err) throw err
-      connection.query(fishSQL.insert, [name, img], (err, result) => {
-        if (err) throw err
+    pool.getConnection((err1, connection) => {
+      if (err1) throw err1
+      connection.query(fishSQL.insert, [name, img], (err2, result) => {
+        if (err2) throw err2
         // 释放连接池
         connection.release()
         return dealRes(res, 0, '添加成功')
@@ -74,17 +75,17 @@ router.post('/', (req, res) => {
 
 // 编辑
 router.put('/', (req, res) => {
-  let { id, name, img } = req.body
+  const { id, name, img } = req.body
 
-  if (id == undefined || !name) {
+  if (id === undefined || !name) {
     return dealRes(res, 1, '材料信息错误！')
   }
 
   try {
-    pool.getConnection((err, connection) => {
-      if (err) throw err
-      connection.query(fishSQL.update, [name, img, id], (err, result) => {
-        if (err) throw err
+    pool.getConnection((err1, connection) => {
+      if (err1) throw err1
+      connection.query(fishSQL.update, [name, img, id], (err2, result) => {
+        if (err2) throw err2
         // 释放连接池
         connection.release()
         return dealRes(res, 0, '修改成功')
@@ -95,4 +96,4 @@ router.put('/', (req, res) => {
   }
 })
 
-module.exports = router
+export default router

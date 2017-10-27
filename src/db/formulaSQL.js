@@ -1,0 +1,37 @@
+const formulaSQL = {
+  insert: 'INSERT INTO formula(pid, tarId, tarType, num) VALUES(?,?,?,?)',
+  compare: 'SELECT * FROM formula AS f WHERE f.pid = ? AND f.tarId = ? AND f.tarType = ?',  // 比较
+  query: 'SELECT j.id AS jobId, j.name AS jobName,'
+  + 'p.id AS proId, p.name AS proName, p.type AS proType,'
+  + 'f.tarId AS forTarId, f.tarType AS forTarId, f.num AS forNum,'
+  + 'FROM job AS j, PRODUCT AS p, formula AS f '
+  + 'WHERE f.pid LIKE ?',
+  // 获取product详情
+  getSingleProduct: 'SELECT'
+  + ' p.id, p.name, p.img, p.level, p.difficulty, p.stamina,'
+  + ' j.id AS jobId, j.name AS jobName'
+  + ' FROM product AS p, job AS j'
+  + ' WHERE p.id = ? AND j.id = p.jobId',
+  // 根据pid获取配方集合
+  getFormulaByPid: 'SELECT'
+  + ' *'
+  + ' FROM formula AS f'
+  + ' WHERE f.pid = ?',
+  // 根据id集合获取材料
+  getMaterialByIds: 'SELECT'
+  + ' *'
+  + ' FROM material AS m'
+  + ' WHERE m.id IN (?)',
+  // 根据id集合获取作物
+  getProductByIds: 'SELECT'
+  + ' *'
+  + ' FROM product AS p'
+  + ' WHERE p.id IN (?)',
+  // 根据id集合获取鱼类
+  getFishByIds: 'SELECT'
+  + ' *'
+  + ' FROM fish AS f'
+  + ' WHERE f.id IN (?)',
+}
+
+export default formulaSQL

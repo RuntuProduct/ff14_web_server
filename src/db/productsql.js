@@ -1,4 +1,4 @@
-var JobSQL = {  
+const JobSQL = {
   insert: 'INSERT INTO product(name, img, jobId, level, difficulty, stamina) VALUES(?,?,?,?,?,?)',
   update: 'UPDATE product SET name = ?, img = ?, jobId = ?, level = ?, difficulty = ?, stamina = ? WHERE id = ?',
   delete: 'DELETE FROM product WHERE id = ?',
@@ -8,6 +8,6 @@ var JobSQL = {
   + 'WHERE p.name LIKE ? AND p.jobId IN (?) AND p.jobId = j.id LIMIT ?,?',
   count: 'SELECT COUNT(*) AS total FROM product',
   getUserById: 'SELECT * FROM product WHERE id = ? ',
-};
+}
 
-module.exports = JobSQL;
+export default JobSQL
