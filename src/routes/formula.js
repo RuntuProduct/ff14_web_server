@@ -23,7 +23,7 @@ const getTarAry = (ary, type) => {
       } else {
         throw new Error('类型错误')
       }
-      console.log(query, ids)
+      // console.log(query, ids)
 
       pool.getConnection((err1, connection) => {
         if (err1) throw new Error(err1)
@@ -48,9 +48,9 @@ const mixinAry = (ary, mat, pro, fish) => {
   for (let i = 0; i < ary.length; i += 1) {
     const { tarType, tarId } = ary[i]
     let tar
-    if (tarType == '01') {
+    if (tarType === '01') {
       tar = mat
-    } else if (tarType == '02') {
+    } else if (tarType === '02') {
       tar = pro
     } else {
       tar = fish
@@ -74,7 +74,7 @@ const getFormula = async (ary) => {
   const materialAry = await getTarAry(ary, '01')
   const productAry = await getTarAry(ary, '02')
   const fishAry = await getTarAry(ary, '03')
-  console.log(fishAry, productAry, materialAry)
+  // console.log(fishAry, productAry, materialAry)
   return mixinAry(ary, materialAry, productAry, fishAry)
 }
 
@@ -99,7 +99,7 @@ router.get('/', (req, res) => {
             if (result2 && result2.length) {
               // 处理配方数据
               getFormula(result2).then((formula) => {
-                console.log('formula:', formula)
+                // console.log('formula:', formula)
                 // 释放连接池
                 connection.release()
                 dealRes(res, 0, {

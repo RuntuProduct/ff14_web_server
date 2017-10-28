@@ -22,10 +22,10 @@ router.get('/', (req, res) => {
     sName = '%'
   }
   let sType
-  if (parseInt(getType, 10) > 0 && parseInt(getType, 10) <= 4) {
-    sType = [getType]
+  if (getType) {
+    sType = `%${getType}%`
   } else {
-    sType = ['01', '02', '03', '04']
+    sType = '%'
   }
 
   if (!page || !pageSize) {
@@ -65,9 +65,9 @@ router.post('/', (req, res) => {
   }
 
   let jobId
-  if (getType === '01' || getType === '02') {
+  if (getType.indexOf('01') !== -1 || getType.indexOf('02') !== -1) {
     jobId = 2
-  } else if (getType === '03' || getType === '04') {
+  } else if (getType.indexOf('03') !== -1 || getType.indexOf('04') !== -1) {
     jobId = 3
   } else {
     return dealRes(res, 1, '材料信息错误！')
@@ -97,9 +97,9 @@ router.put('/', (req, res) => {
   }
 
   let jobId
-  if (getType === '01' || getType === '02') {
+  if (getType.indexOf('01') !== -1 || getType.indexOf('02') !== -1) {
     jobId = 2
-  } else if (getType === '03' || getType === '04') {
+  } else if (getType.indexOf('03') !== -1 || getType.indexOf('04') !== -1) {
     jobId = 3
   } else {
     return dealRes(res, 1, '材料信息错误！')

@@ -19,19 +19,22 @@ const formulaSQL = {
   + ' WHERE f.pid = ?',
   // 根据id集合获取材料
   getMaterialByIds: 'SELECT'
-  + ' *'
-  + ' FROM material AS m'
-  + ' WHERE m.id IN (?)',
+  + ' m.id, m.name, m.img,'
+  + ' j.id AS jobId, j.name AS jobName'
+  + ' FROM material AS m, job AS j'
+  + ' WHERE m.id IN (?) AND m.jobId = j.id',
   // 根据id集合获取作物
   getProductByIds: 'SELECT'
-  + ' *'
-  + ' FROM product AS p'
-  + ' WHERE p.id IN (?)',
+  + ' p.id, p.name, p.img,'
+  + ' j.id AS jobId, j.name AS jobName'
+  + ' FROM product AS p, job AS j'
+  + ' WHERE p.id IN (?) AND p.jobId = j.id',
   // 根据id集合获取鱼类
   getFishByIds: 'SELECT'
-  + ' *'
-  + ' FROM fish AS f'
-  + ' WHERE f.id IN (?)',
+  + ' f.id, f.name, f.img,'
+  + ' j.id AS jobId, j.name AS jobName'
+  + ' FROM fish AS f, job AS j'
+  + ' WHERE f.id IN (?) AND j.id = 1',
 }
 
 export default formulaSQL

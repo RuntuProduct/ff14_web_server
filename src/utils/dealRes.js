@@ -1,18 +1,21 @@
-let dealRes = (res, code, data) => {
+const dealRes = (res, code, data) => {
   if (code) {
-    return res.send({
+    res.send({
       code: code,
       status: 'error',
       message: data,
       data: null,
     })
+    res.end()
   } else {
-    return res.send({
+    res.send({
       code: 200,
       status: 'success',
       message: 'success',
       data: data,
     })
+    res.end()
   }
 }
-module.exports = dealRes
+
+export default dealRes
