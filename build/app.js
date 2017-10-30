@@ -65,7 +65,7 @@ module.exports =
 /******/ 	__webpack_require__.p = "/assets/";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 30);
+/******/ 	return __webpack_require__(__webpack_require__.s = 32);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -132,18 +132,18 @@ module.exports = require("mysql");
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_express__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_express___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_express__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_path__ = __webpack_require__(29);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_path__ = __webpack_require__(31);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_path___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_path__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_http__ = __webpack_require__(26);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_http__ = __webpack_require__(28);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_http___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_http__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_consolidate__ = __webpack_require__(25);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_consolidate__ = __webpack_require__(27);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_consolidate___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_consolidate__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_body_parser__ = __webpack_require__(23);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_body_parser__ = __webpack_require__(25);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_body_parser___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4_body_parser__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_compression__ = __webpack_require__(24);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_compression__ = __webpack_require__(26);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_compression___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5_compression__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__config__ = __webpack_require__(6);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__routes_index__ = __webpack_require__(16);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__routes_index__ = __webpack_require__(17);
 
 
 
@@ -259,6 +259,20 @@ const JobSQL = {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+const mapSQL = {
+  insert: 'INSERT' + ' INTO map(name, img)' + ' VALUES(?,?)',
+  update: 'UPDATE' + ' map' + ' SET name = ?, img = ?' + ' WHERE id = ?',
+  queryPage: 'SELECT' + ' *' + ' FROM map AS m' + ' WHERE m.name LIKE ? LIMIT ?,?',
+  count: 'SELECT COUNT(*) AS total FROM map'
+};
+
+/* harmony default export */ __webpack_exports__["a"] = (mapSQL);
+
+/***/ }),
+/* 11 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
 const materialSQL = {
   insert: 'INSERT' + ' INTO material(name, img, jobId, getType)' + ' VALUES (?,?,?,?)',
   update: 'UPDATE material SET name = ?, img = ?, jobId = ?, getType = ? WHERE id = ?',
@@ -271,7 +285,7 @@ const materialSQL = {
 /* harmony default export */ __webpack_exports__["a"] = (materialSQL);
 
 /***/ }),
-/* 11 */
+/* 12 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -282,7 +296,7 @@ const NotesSQL = {
 /* harmony default export */ __webpack_exports__["a"] = (NotesSQL);
 
 /***/ }),
-/* 12 */
+/* 13 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -298,7 +312,7 @@ const JobSQL = {
 /* harmony default export */ __webpack_exports__["a"] = (JobSQL);
 
 /***/ }),
-/* 13 */
+/* 14 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -312,7 +326,7 @@ const UserSQL = {
 /* harmony default export */ __webpack_exports__["a"] = (UserSQL);
 
 /***/ }),
-/* 14 */
+/* 15 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -424,7 +438,7 @@ router.put('/', (req, res) => {
 /* harmony default export */ __webpack_exports__["a"] = (router);
 
 /***/ }),
-/* 15 */
+/* 16 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -432,7 +446,7 @@ router.put('/', (req, res) => {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_express___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_express__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_mysql__ = __webpack_require__(3);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_mysql___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_mysql__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_lodash__ = __webpack_require__(27);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_lodash__ = __webpack_require__(29);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_lodash___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_lodash__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__db_config__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__db_formulaSQL__ = __webpack_require__(8);
@@ -615,19 +629,21 @@ router.post('/', (req, res) => {
 /* harmony default export */ __webpack_exports__["a"] = (router);
 
 /***/ }),
-/* 16 */
+/* 17 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__upload__ = __webpack_require__(21);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__user__ = __webpack_require__(22);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__job__ = __webpack_require__(17);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__product__ = __webpack_require__(20);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__material__ = __webpack_require__(18);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__fish__ = __webpack_require__(14);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__formula__ = __webpack_require__(15);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__notes__ = __webpack_require__(19);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__upload__ = __webpack_require__(23);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__user__ = __webpack_require__(24);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__job__ = __webpack_require__(18);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__product__ = __webpack_require__(22);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__material__ = __webpack_require__(20);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__fish__ = __webpack_require__(15);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__formula__ = __webpack_require__(16);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__notes__ = __webpack_require__(21);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__map__ = __webpack_require__(19);
 // 路由规则存放目录
+
 
 
 
@@ -658,12 +674,13 @@ const router = app => {
   app.use('/api/fish', __WEBPACK_IMPORTED_MODULE_5__fish__["a" /* default */]);
   app.use('/api/formula', __WEBPACK_IMPORTED_MODULE_6__formula__["a" /* default */]);
   app.use('/api/notes', __WEBPACK_IMPORTED_MODULE_7__notes__["a" /* default */]);
+  app.use('/api/map', __WEBPACK_IMPORTED_MODULE_8__map__["a" /* default */]);
 };
 
 /* harmony default export */ __webpack_exports__["a"] = (router);
 
 /***/ }),
-/* 17 */
+/* 18 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -761,7 +778,7 @@ router.get('/query', (req, res) => {
 /* harmony default export */ __webpack_exports__["a"] = (router);
 
 /***/ }),
-/* 18 */
+/* 19 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -770,7 +787,119 @@ router.get('/query', (req, res) => {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_mysql__ = __webpack_require__(3);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_mysql___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_mysql__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__db_config__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__db_materialSQL__ = __webpack_require__(10);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__db_mapSQL__ = __webpack_require__(10);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__utils_dealRes__ = __webpack_require__(1);
+
+
+
+
+
+
+const router = __WEBPACK_IMPORTED_MODULE_0_express___default.a.Router();
+// 使用数据库配置信息创建一个MySQL连接池
+const pool = __WEBPACK_IMPORTED_MODULE_1_mysql___default.a.createPool(__WEBPACK_IMPORTED_MODULE_2__db_config__["a" /* default */].mysql);
+
+// 获取分页
+router.get('/', (req, res) => {
+  let { page, pageSize } = req.query;
+  const { name } = req.query;
+  page = parseInt(page, 10);
+  pageSize = parseInt(pageSize, 10);
+
+  let sName;
+  if (name) {
+    sName = `%${name}%`;
+  } else {
+    sName = '%';
+  }
+
+  if (!page || !pageSize) {
+    return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4__utils_dealRes__["a" /* default */])(res, 1, '分页信息错误！');
+  }
+
+  try {
+    pool.getConnection((err1, connection) => {
+      if (err1) throw err1;
+      connection.query(__WEBPACK_IMPORTED_MODULE_3__db_mapSQL__["a" /* default */].queryPage, [sName, (page - 1) * pageSize, pageSize], (err2, result) => {
+        if (err2) throw err2;
+        connection.query(__WEBPACK_IMPORTED_MODULE_3__db_mapSQL__["a" /* default */].count, (err3, count) => {
+          if (err3) throw err3;
+          // 释放连接池
+          connection.release();
+          const { total } = count[0];
+          return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4__utils_dealRes__["a" /* default */])(res, 0, {
+            list: result,
+            current: page,
+            pageSize,
+            total
+          });
+        });
+      });
+    });
+  } catch (e) {
+    return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4__utils_dealRes__["a" /* default */])(res, 1, 'internal error');
+  }
+});
+
+// 添加地图
+router.post('/', (req, res) => {
+  const { name, img } = req.body;
+
+  if (!name) {
+    return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4__utils_dealRes__["a" /* default */])(res, 1, '地图信息错误！');
+  }
+
+  try {
+    pool.getConnection((err1, connection) => {
+      if (err1) throw err1;
+      connection.query(__WEBPACK_IMPORTED_MODULE_3__db_mapSQL__["a" /* default */].insert, [name, img], (err2, result) => {
+        if (err2) throw err2;
+        // 释放连接池
+        connection.release();
+        return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4__utils_dealRes__["a" /* default */])(res, 0, '添加成功');
+      });
+    });
+  } catch (e) {
+    return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4__utils_dealRes__["a" /* default */])(res, 1, 'internal error');
+  }
+});
+
+// 编辑
+router.put('/', (req, res) => {
+  const { id, name, img } = req.body;
+
+  if (id === undefined || !name) {
+    return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4__utils_dealRes__["a" /* default */])(res, 1, '地图信息错误！');
+  }
+
+  try {
+    pool.getConnection((err1, connection) => {
+      if (err1) throw err1;
+      connection.query(__WEBPACK_IMPORTED_MODULE_3__db_mapSQL__["a" /* default */].update, [name, img, id], (err2, result) => {
+        if (err2) throw err2;
+        // 释放连接池
+        connection.release();
+        return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4__utils_dealRes__["a" /* default */])(res, 0, '修改成功');
+      });
+    });
+  } catch (e) {
+    return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4__utils_dealRes__["a" /* default */])(res, 1, 'internal error');
+  }
+});
+
+/* harmony default export */ __webpack_exports__["a"] = (router);
+
+/***/ }),
+/* 20 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_express__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_express___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_express__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_mysql__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_mysql___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_mysql__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__db_config__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__db_materialSQL__ = __webpack_require__(11);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__utils_dealRes__ = __webpack_require__(1);
 
 
@@ -936,7 +1065,7 @@ router.delete('/', (req, res) => {
 /* harmony default export */ __webpack_exports__["a"] = (router);
 
 /***/ }),
-/* 19 */
+/* 21 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -945,7 +1074,7 @@ router.delete('/', (req, res) => {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_mysql__ = __webpack_require__(3);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_mysql___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_mysql__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__db_config__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__db_notesSQL__ = __webpack_require__(11);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__db_notesSQL__ = __webpack_require__(12);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__utils_dealRes__ = __webpack_require__(1);
 
 
@@ -984,7 +1113,7 @@ router.get('/product', (req, res) => {
 /* harmony default export */ __webpack_exports__["a"] = (router);
 
 /***/ }),
-/* 20 */
+/* 22 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -993,7 +1122,7 @@ router.get('/product', (req, res) => {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_mysql__ = __webpack_require__(3);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_mysql___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_mysql__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__db_config__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__db_productsql__ = __webpack_require__(12);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__db_productsql__ = __webpack_require__(13);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__utils_dealRes__ = __webpack_require__(1);
 
 
@@ -1141,13 +1270,13 @@ router.delete('/', (req, res) => {
 /* harmony default export */ __webpack_exports__["a"] = (router);
 
 /***/ }),
-/* 21 */
+/* 23 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_express__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_express___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_express__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_multer__ = __webpack_require__(28);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_multer__ = __webpack_require__(30);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_multer___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_multer__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__utils_dealRes__ = __webpack_require__(1);
 
@@ -1180,7 +1309,7 @@ router.post('/', upload.single('file'), (req, res, next) => {
 /* harmony default export */ __webpack_exports__["a"] = (router);
 
 /***/ }),
-/* 22 */
+/* 24 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -1189,7 +1318,7 @@ router.post('/', upload.single('file'), (req, res, next) => {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_mysql__ = __webpack_require__(3);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_mysql___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_mysql__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__db_config__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__db_usersql__ = __webpack_require__(13);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__db_usersql__ = __webpack_require__(14);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__utils_dealRes__ = __webpack_require__(1);
 
 
@@ -1239,26 +1368,33 @@ const rbacPrivileges = [{
 }, {
   privilegeId: 6,
   menu: '01',
+  levelId: '001005',
+  path: '/setting/map',
+  privilegeName: '地图设置',
+  remark: 'remark'
+}, {
+  privilegeId: 7,
+  menu: '01',
   levelId: '002',
   path: '/notes',
   privilegeName: '各类笔记',
   remark: 'remark'
 }, {
-  privilegeId: 7,
+  privilegeId: 8,
   menu: '01',
   levelId: '002001',
   path: '/notes/product',
   privilegeName: '制作笔记',
   remark: 'remark'
 }, {
-  privilegeId: 8,
+  privilegeId: 9,
   menu: '01',
   levelId: '002002',
   path: '/notes/gather',
   privilegeName: '采集笔记',
   remark: 'remark'
 }, {
-  privilegeId: 9,
+  privilegeId: 10,
   menu: '01',
   levelId: '002003',
   path: '/notes/fish',
@@ -1321,49 +1457,49 @@ router.post('/login', (req, res, next) => {
 /* harmony default export */ __webpack_exports__["a"] = (router);
 
 /***/ }),
-/* 23 */
+/* 25 */
 /***/ (function(module, exports) {
 
 module.exports = require("body-parser");
 
 /***/ }),
-/* 24 */
+/* 26 */
 /***/ (function(module, exports) {
 
 module.exports = require("compression");
 
 /***/ }),
-/* 25 */
+/* 27 */
 /***/ (function(module, exports) {
 
 module.exports = require("consolidate");
 
 /***/ }),
-/* 26 */
+/* 28 */
 /***/ (function(module, exports) {
 
 module.exports = require("http");
 
 /***/ }),
-/* 27 */
+/* 29 */
 /***/ (function(module, exports) {
 
 module.exports = require("lodash");
 
 /***/ }),
-/* 28 */
+/* 30 */
 /***/ (function(module, exports) {
 
 module.exports = require("multer");
 
 /***/ }),
-/* 29 */
+/* 31 */
 /***/ (function(module, exports) {
 
 module.exports = require("path");
 
 /***/ }),
-/* 30 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(5);

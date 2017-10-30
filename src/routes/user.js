@@ -52,13 +52,21 @@ const rbacPrivileges = [
   {
     privilegeId: 6,
     menu: '01',
+    levelId: '001005',
+    path: '/setting/map',
+    privilegeName: '地图设置',
+    remark: 'remark',
+  },
+  {
+    privilegeId: 7,
+    menu: '01',
     levelId: '002',
     path: '/notes',
     privilegeName: '各类笔记',
     remark: 'remark',
   },
   {
-    privilegeId: 7,
+    privilegeId: 8,
     menu: '01',
     levelId: '002001',
     path: '/notes/product',
@@ -66,7 +74,7 @@ const rbacPrivileges = [
     remark: 'remark',
   },
   {
-    privilegeId: 8,
+    privilegeId: 9,
     menu: '01',
     levelId: '002002',
     path: '/notes/gather',
@@ -74,7 +82,7 @@ const rbacPrivileges = [
     remark: 'remark',
   },
   {
-    privilegeId: 9,
+    privilegeId: 10,
     menu: '01',
     levelId: '002003',
     path: '/notes/fish',

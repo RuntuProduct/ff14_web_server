@@ -7,6 +7,7 @@ import material from './material'
 import fish from './fish'
 import formula from './formula'
 import notes from './notes'
+import map from './map'
 
 const router = (app) => {
   app.get('/', (req, res, next) => {
@@ -29,6 +30,7 @@ const router = (app) => {
   app.use('/api/fish', fish)
   app.use('/api/formula', formula)
   app.use('/api/notes', notes)
+  app.use('/api/map', map)
 }
 
 export default router
