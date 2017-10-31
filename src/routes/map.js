@@ -1,12 +1,63 @@
 import express from 'express'
 import mysql from 'mysql'
+import _ from 'lodash'
 import dbConfig from '../db/config'
 import mapSQL from '../db/mapSQL'
+import locationSQL from '../db/locationSQL'
 import dealRes from '../utils/dealRes'
 
 const router = express.Router()
 // 使用数据库配置信息创建一个MySQL连接池
 const pool = mysql.createPool(dbConfig.mysql)
+
+const getLocation = (ids) => {
+  return new Promise((resolve, reject) => {
+    try {
+      pool.getConnection((err1, connection) => {
+        if (err1) { throw new Error('连接数据库失败') }
+        connection.query(locationSQL.getLocationByIds, [ids], (err2, result) => {
+          if (err2) { throw new Error(err2) }
+          resolve(result)
+        })
+      })
+    } catch (e) {
+      reject(e)
+    }
+  })
+}
+
+// 根据id进行地点分组
+const mapLocationById = (ary) => {
+  const res = {}
+  for (let i = 0; i < ary.length; i += 1) {
+    const { mapId } = ary[i]
+    if (!res[mapId] || !_.isArray(res[mapId])) {
+      res[mapId] = []
+    }
+    res[mapId].push(ary[i])
+  }
+  return res
+}
+
+const handleLocation = async (list) => {
+  const result = _.cloneDeep(list)
+  const ids = list.map(da => da.id)
+  // 获取所有相关的地点数组
+  const locationAry = await getLocation(ids)
+  // 根据id分组
+  const idsObj = mapLocationById(locationAry)
+  // 根据id并入对应的map对象体内
+  for (let i = 0; i < result.length; i += 1) {
+    const { id } = result[i]
+    if (idsObj[id] && _.isArray(idsObj[id])) {
+      result[i].positionAry = idsObj[id]
+    } else {
+      result[i].positionAry = []
+    }
+  }
+  console.log(result)
+  return result
+}
 
 // 获取分页
 router.get('/', (req, res) => {
@@ -36,11 +87,15 @@ router.get('/', (req, res) => {
           // 释放连接池
           connection.release()
           const { total } = count[0]
-          return dealRes(res, 0, {
-            list: result,
-            current: page,
-            pageSize,
-            total,
+          handleLocation(result).then((list) => {
+            return dealRes(res, 0, {
+              list,
+              current: page,
+              pageSize,
+              total,
+            })
+          }, (err) => {
+            throw new Error(err)
           })
         })
       })

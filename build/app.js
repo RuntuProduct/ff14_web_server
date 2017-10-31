@@ -642,7 +642,9 @@ router.post('/', (req, res) => {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__formula__ = __webpack_require__(16);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__notes__ = __webpack_require__(21);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__map__ = __webpack_require__(19);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__location__ = __webpack_require__(33);
 // 路由规则存放目录
+
 
 
 
@@ -675,6 +677,7 @@ const router = app => {
   app.use('/api/formula', __WEBPACK_IMPORTED_MODULE_6__formula__["a" /* default */]);
   app.use('/api/notes', __WEBPACK_IMPORTED_MODULE_7__notes__["a" /* default */]);
   app.use('/api/map', __WEBPACK_IMPORTED_MODULE_8__map__["a" /* default */]);
+  app.use('/api/location', __WEBPACK_IMPORTED_MODULE_9__location__["a" /* default */]);
 };
 
 /* harmony default export */ __webpack_exports__["a"] = (router);
@@ -786,9 +789,16 @@ router.get('/query', (req, res) => {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_express___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_express__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_mysql__ = __webpack_require__(3);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_mysql___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_mysql__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__db_config__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__db_mapSQL__ = __webpack_require__(10);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__utils_dealRes__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_lodash__ = __webpack_require__(29);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_lodash___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_lodash__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__db_config__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__db_mapSQL__ = __webpack_require__(10);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__db_locationSQL__ = __webpack_require__(34);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__utils_dealRes__ = __webpack_require__(1);
+function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
+
+
+
 
 
 
@@ -797,7 +807,68 @@ router.get('/query', (req, res) => {
 
 const router = __WEBPACK_IMPORTED_MODULE_0_express___default.a.Router();
 // 使用数据库配置信息创建一个MySQL连接池
-const pool = __WEBPACK_IMPORTED_MODULE_1_mysql___default.a.createPool(__WEBPACK_IMPORTED_MODULE_2__db_config__["a" /* default */].mysql);
+const pool = __WEBPACK_IMPORTED_MODULE_1_mysql___default.a.createPool(__WEBPACK_IMPORTED_MODULE_3__db_config__["a" /* default */].mysql);
+
+const getLocation = ids => {
+  return new Promise((resolve, reject) => {
+    try {
+      pool.getConnection((err1, connection) => {
+        if (err1) {
+          throw new Error('连接数据库失败');
+        }
+        connection.query(__WEBPACK_IMPORTED_MODULE_5__db_locationSQL__["a" /* default */].getLocationByIds, [ids], (err2, result) => {
+          if (err2) {
+            throw new Error(err2);
+          }
+          resolve(result);
+        });
+      });
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
+// 根据id进行地点分组
+const mapLocationById = ary => {
+  const res = {};
+  for (let i = 0; i < ary.length; i += 1) {
+    const { mapId } = ary[i];
+    if (!res[mapId] || !__WEBPACK_IMPORTED_MODULE_2_lodash___default.a.isArray(res[mapId])) {
+      res[mapId] = [];
+    }
+    res[mapId].push(ary[i]);
+  }
+  return res;
+};
+
+const handleLocation = (() => {
+  var _ref = _asyncToGenerator(function* (list) {
+    const result = __WEBPACK_IMPORTED_MODULE_2_lodash___default.a.cloneDeep(list);
+    const ids = list.map(function (da) {
+      return da.id;
+    });
+    // 获取所有相关的地点数组
+    const locationAry = yield getLocation(ids);
+    // 根据id分组
+    const idsObj = mapLocationById(locationAry);
+    // 根据id并入对应的map对象体内
+    for (let i = 0; i < result.length; i += 1) {
+      const { id } = result[i];
+      if (idsObj[id] && __WEBPACK_IMPORTED_MODULE_2_lodash___default.a.isArray(idsObj[id])) {
+        result[i].positionAry = idsObj[id];
+      } else {
+        result[i].positionAry = [];
+      }
+    }
+    console.log(result);
+    return result;
+  });
+
+  return function handleLocation(_x) {
+    return _ref.apply(this, arguments);
+  };
+})();
 
 // 获取分页
 router.get('/', (req, res) => {
@@ -814,30 +885,34 @@ router.get('/', (req, res) => {
   }
 
   if (!page || !pageSize) {
-    return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4__utils_dealRes__["a" /* default */])(res, 1, '分页信息错误！');
+    return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_6__utils_dealRes__["a" /* default */])(res, 1, '分页信息错误！');
   }
 
   try {
     pool.getConnection((err1, connection) => {
       if (err1) throw err1;
-      connection.query(__WEBPACK_IMPORTED_MODULE_3__db_mapSQL__["a" /* default */].queryPage, [sName, (page - 1) * pageSize, pageSize], (err2, result) => {
+      connection.query(__WEBPACK_IMPORTED_MODULE_4__db_mapSQL__["a" /* default */].queryPage, [sName, (page - 1) * pageSize, pageSize], (err2, result) => {
         if (err2) throw err2;
-        connection.query(__WEBPACK_IMPORTED_MODULE_3__db_mapSQL__["a" /* default */].count, (err3, count) => {
+        connection.query(__WEBPACK_IMPORTED_MODULE_4__db_mapSQL__["a" /* default */].count, (err3, count) => {
           if (err3) throw err3;
           // 释放连接池
           connection.release();
           const { total } = count[0];
-          return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4__utils_dealRes__["a" /* default */])(res, 0, {
-            list: result,
-            current: page,
-            pageSize,
-            total
+          handleLocation(result).then(list => {
+            return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_6__utils_dealRes__["a" /* default */])(res, 0, {
+              list,
+              current: page,
+              pageSize,
+              total
+            });
+          }, err => {
+            throw new Error(err);
           });
         });
       });
     });
   } catch (e) {
-    return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4__utils_dealRes__["a" /* default */])(res, 1, 'internal error');
+    return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_6__utils_dealRes__["a" /* default */])(res, 1, 'internal error');
   }
 });
 
@@ -846,21 +921,21 @@ router.post('/', (req, res) => {
   const { name, img } = req.body;
 
   if (!name) {
-    return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4__utils_dealRes__["a" /* default */])(res, 1, '地图信息错误！');
+    return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_6__utils_dealRes__["a" /* default */])(res, 1, '地图信息错误！');
   }
 
   try {
     pool.getConnection((err1, connection) => {
       if (err1) throw err1;
-      connection.query(__WEBPACK_IMPORTED_MODULE_3__db_mapSQL__["a" /* default */].insert, [name, img], (err2, result) => {
+      connection.query(__WEBPACK_IMPORTED_MODULE_4__db_mapSQL__["a" /* default */].insert, [name, img], (err2, result) => {
         if (err2) throw err2;
         // 释放连接池
         connection.release();
-        return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4__utils_dealRes__["a" /* default */])(res, 0, '添加成功');
+        return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_6__utils_dealRes__["a" /* default */])(res, 0, '添加成功');
       });
     });
   } catch (e) {
-    return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4__utils_dealRes__["a" /* default */])(res, 1, 'internal error');
+    return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_6__utils_dealRes__["a" /* default */])(res, 1, 'internal error');
   }
 });
 
@@ -869,21 +944,21 @@ router.put('/', (req, res) => {
   const { id, name, img } = req.body;
 
   if (id === undefined || !name) {
-    return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4__utils_dealRes__["a" /* default */])(res, 1, '地图信息错误！');
+    return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_6__utils_dealRes__["a" /* default */])(res, 1, '地图信息错误！');
   }
 
   try {
     pool.getConnection((err1, connection) => {
       if (err1) throw err1;
-      connection.query(__WEBPACK_IMPORTED_MODULE_3__db_mapSQL__["a" /* default */].update, [name, img, id], (err2, result) => {
+      connection.query(__WEBPACK_IMPORTED_MODULE_4__db_mapSQL__["a" /* default */].update, [name, img, id], (err2, result) => {
         if (err2) throw err2;
         // 释放连接池
         connection.release();
-        return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4__utils_dealRes__["a" /* default */])(res, 0, '修改成功');
+        return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_6__utils_dealRes__["a" /* default */])(res, 0, '修改成功');
       });
     });
   } catch (e) {
-    return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4__utils_dealRes__["a" /* default */])(res, 1, 'internal error');
+    return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_6__utils_dealRes__["a" /* default */])(res, 1, 'internal error');
   }
 });
 
@@ -1505,6 +1580,112 @@ module.exports = require("path");
 __webpack_require__(5);
 module.exports = __webpack_require__(4);
 
+
+/***/ }),
+/* 33 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_express__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_express___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_express__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_mysql__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_mysql___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_mysql__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__db_config__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__db_locationSQL__ = __webpack_require__(34);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__utils_dealRes__ = __webpack_require__(1);
+
+
+
+
+
+
+const router = __WEBPACK_IMPORTED_MODULE_0_express___default.a.Router();
+// 使用数据库配置信息创建一个MySQL连接池
+const pool = __WEBPACK_IMPORTED_MODULE_1_mysql___default.a.createPool(__WEBPACK_IMPORTED_MODULE_2__db_config__["a" /* default */].mysql);
+
+// 根据地图id获取地点数组
+router.get('/', (req, res) => {
+  const { mapId } = req.query;
+  if (mapId == undefined) {
+    return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4__utils_dealRes__["a" /* default */])(res, 1, '缺少地图id！');
+  }
+
+  try {
+    pool.getConnection((err1, connection) => {
+      if (err1) throw err1;
+      connection.query(__WEBPACK_IMPORTED_MODULE_3__db_locationSQL__["a" /* default */].getLocationById, [mapId], (err2, result) => {
+        if (err2) throw err2;
+        // 释放连接池
+        connection.release();
+        return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4__utils_dealRes__["a" /* default */])(res, 0, result);
+      });
+    });
+  } catch (e) {
+    return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4__utils_dealRes__["a" /* default */])(res, 1, 'internal error');
+  }
+});
+
+// 添加地图
+router.post('/', (req, res) => {
+  const { name, img } = req.body;
+
+  if (!name) {
+    return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4__utils_dealRes__["a" /* default */])(res, 1, '地图信息错误！');
+  }
+
+  try {
+    pool.getConnection((err1, connection) => {
+      if (err1) throw err1;
+      connection.query(__WEBPACK_IMPORTED_MODULE_3__db_locationSQL__["a" /* default */].insert, [name, img], (err2, result) => {
+        if (err2) throw err2;
+        // 释放连接池
+        connection.release();
+        return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4__utils_dealRes__["a" /* default */])(res, 0, '添加成功');
+      });
+    });
+  } catch (e) {
+    return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4__utils_dealRes__["a" /* default */])(res, 1, 'internal error');
+  }
+});
+
+// 编辑
+router.put('/', (req, res) => {
+  const { id, name, img } = req.body;
+
+  if (id === undefined || !name) {
+    return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4__utils_dealRes__["a" /* default */])(res, 1, '地图信息错误！');
+  }
+
+  try {
+    pool.getConnection((err1, connection) => {
+      if (err1) throw err1;
+      connection.query(__WEBPACK_IMPORTED_MODULE_3__db_locationSQL__["a" /* default */].update, [name, img, id], (err2, result) => {
+        if (err2) throw err2;
+        // 释放连接池
+        connection.release();
+        return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4__utils_dealRes__["a" /* default */])(res, 0, '修改成功');
+      });
+    });
+  } catch (e) {
+    return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4__utils_dealRes__["a" /* default */])(res, 1, 'internal error');
+  }
+});
+
+/* harmony default export */ __webpack_exports__["a"] = (router);
+
+/***/ }),
+/* 34 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+const locationSQL = {
+  insert: 'INSERT' + ' INTO map(name, img)' + ' VALUES(?,?)',
+  update: 'UPDATE' + ' map' + ' SET name = ?, img = ?' + ' WHERE id = ?',
+  getLocationById: 'SELECT' + ' *' + ' FROM location AS l' + ' WHERE l.mapId = ?',
+  getLocationByIds: 'SELECT' + ' *' + ' FROM location AS l' + ' WHERE l.mapId IN (?)'
+};
+
+/* harmony default export */ __webpack_exports__["a"] = (locationSQL);
 
 /***/ })
 /******/ ]);
