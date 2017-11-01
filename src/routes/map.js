@@ -107,16 +107,20 @@ router.get('/', (req, res) => {
 
 // 添加地图
 router.post('/', (req, res) => {
-  const { name, img } = req.body
+  const { name, img, baseX, baseY } = req.body
 
-  if (!name) {
+  if (name === undefined) {
     return dealRes(res, 1, '地图信息错误！')
+  } else if (img === undefined) {
+    return dealRes(res, 1, '地图图片信息错误！')
+  } else if (!baseX || parseInt(baseX, 10) !== baseX || !baseY || parseInt(baseY, 10) !== baseY) {
+    return dealRes(res, 1, '地图尺寸信息错误！')
   }
 
   try {
     pool.getConnection((err1, connection) => {
       if (err1) throw err1
-      connection.query(mapSQL.insert, [name, img], (err2, result) => {
+      connection.query(mapSQL.insert, [name, img, baseX, baseY], (err2, result) => {
         if (err2) throw err2
         // 释放连接池
         connection.release()
@@ -130,16 +134,22 @@ router.post('/', (req, res) => {
 
 // 编辑
 router.put('/', (req, res) => {
-  const { id, name, img } = req.body
+  const { id, name, img, baseX, baseY } = req.body
 
-  if (id === undefined || !name) {
+  if (id === undefined || parseInt(id, 10) !== id) {
+    return dealRes(res, 1, '地图id错误！')
+  } else if (name === undefined) {
     return dealRes(res, 1, '地图信息错误！')
+  } else if (img === undefined) {
+    return dealRes(res, 1, '地图图片信息错误！')
+  } else if (!baseX || parseInt(baseX, 10) !== baseX || !baseY || parseInt(baseY, 10) !== baseY) {
+    return dealRes(res, 1, '地图尺寸信息错误！')
   }
 
   try {
     pool.getConnection((err1, connection) => {
       if (err1) throw err1
-      connection.query(mapSQL.update, [name, img, id], (err2, result) => {
+      connection.query(mapSQL.update, [name, img, baseX, baseY, id], (err2, result) => {
         if (err2) throw err2
         // 释放连接池
         connection.release()

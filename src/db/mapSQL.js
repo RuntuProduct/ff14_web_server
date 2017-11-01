@@ -1,10 +1,10 @@
 const mapSQL = {
   insert: 'INSERT'
-  + ' INTO map(name, img)'
+  + ' INTO map(name, img, baseX, baseY)'
   + ' VALUES(?,?)',
   update: 'UPDATE'
   + ' map'
-  + ' SET name = ?, img = ?'
+  + ' SET name = ?, img = ?, baseX = ?, baseY = ?'
   + ' WHERE id = ?',
   queryPage: 'SELECT'
   + ' *'

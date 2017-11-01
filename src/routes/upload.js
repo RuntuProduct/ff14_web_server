@@ -1,5 +1,6 @@
 import express from 'express'
 import multer from 'multer'
+import sizeOf from 'image-size'
 import dealRes from '../utils/dealRes'
 
 const router = express.Router()
@@ -10,8 +11,12 @@ const storage = multer.diskStorage({
     cb(null, 'uploads/')
   },
   filename: (req, file, cb) => {
-    const nameNow = file.originalname.split('.')
-    cb(null, `${nameNow[0].slice(0, 5)}_${Date.now()}.${nameNow[1]}`)
+    const nameNow = file.originalname.match(/^(.+)\.(.+)$/)
+    if (nameNow) {
+      cb(null, `${nameNow[1].slice(0, 5)}_${Date.now()}.${nameNow[2]}`)
+    } else {
+      cb(null, false)
+    }
   },
 })
 
@@ -19,10 +24,14 @@ const storage = multer.diskStorage({
 const upload = multer({ storage })
 
 // 上传图片
-router.post('/', upload.single('file'), (req, res, next) => {
+router.post('/', upload.single('file'), async (req, res, next) => {
   const { file } = req
   console.log(file)
-  dealRes(res, 0, file)
+  if (file) {
+    const dime = sizeOf(file.path)
+    return dealRes(res, 0, Object.assign(file, { detail: dime }))
+  }
+  return dealRes(res, 1, '上传失败')
 })
 
 export default router

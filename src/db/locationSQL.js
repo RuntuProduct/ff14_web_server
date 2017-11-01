@@ -1,10 +1,10 @@
 const locationSQL = {
   insert: 'INSERT'
-  + ' INTO map(name, img)'
-  + ' VALUES(?,?)',
+  + ' INTO locaiton(name, mapId, axisX, axisY, type)'
+  + ' VALUES(?,?,?,?,?)',
   update: 'UPDATE'
-  + ' map'
-  + ' SET name = ?, img = ?'
+  + ' location'
+  + ' SET name = ?, mapId = ?, axisX = ?, axisY = ?, type = ?'
   + ' WHERE id = ?',
   getLocationById: 'SELECT'
   + ' *'
