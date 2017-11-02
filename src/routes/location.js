@@ -71,7 +71,7 @@ router.put('/', (req, res) => {
     return dealRes(res, 1, '地图id错误！')
   } else if (axisX === undefined || axisY === undefined) {
     return dealRes(res, 1, '地点坐标异常！')
-  } else if (!(type === '01' || type === '02' || type === '03')) {
+  } else if (!(type === '01' || type === '02' || type === '03' || type === '04' || type === '05')) {
     return dealRes(res, 1, '地点类型错误！')
   }
 
