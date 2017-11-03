@@ -14,6 +14,7 @@ const locationSQL = {
   + ' *'
   + ' FROM location AS l'
   + ' WHERE l.mapId IN (?)',
+  deleteById: 'DELETE FROM location WHERE id = ?',
 }
 
 export default locationSQL

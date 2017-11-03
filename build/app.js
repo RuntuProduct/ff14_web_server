@@ -133,7 +133,8 @@ const locationSQL = {
   insert: 'INSERT' + ' INTO locaiton(name, mapId, axisX, axisY, type)' + ' VALUES(?,?,?,?,?)',
   update: 'UPDATE' + ' location' + ' SET name = ?, mapId = ?, axisX = ?, axisY = ?, type = ?' + ' WHERE id = ?',
   getLocationById: 'SELECT' + ' *' + ' FROM location AS l' + ' WHERE l.mapId = ?',
-  getLocationByIds: 'SELECT' + ' *' + ' FROM location AS l' + ' WHERE l.mapId IN (?)'
+  getLocationByIds: 'SELECT' + ' *' + ' FROM location AS l' + ' WHERE l.mapId IN (?)',
+  deleteById: 'DELETE FROM location WHERE id = ?'
 };
 
 /* harmony default export */ __webpack_exports__["a"] = (locationSQL);
@@ -283,6 +284,7 @@ const mapSQL = {
   insert: 'INSERT' + ' INTO map(name, img, baseX, baseY)' + ' VALUES(?,?)',
   update: 'UPDATE' + ' map' + ' SET name = ?, img = ?, baseX = ?, baseY = ?' + ' WHERE id = ?',
   queryPage: 'SELECT' + ' *' + ' FROM map AS m' + ' WHERE m.name LIKE ? LIMIT ?,?',
+  query: 'SELECT' + ' *' + ' FROM map AS m' + ' WHERE m.id = ?',
   count: 'SELECT COUNT(*) AS total FROM map'
 };
 
@@ -885,7 +887,7 @@ router.put('/', (req, res) => {
     return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4__utils_dealRes__["a" /* default */])(res, 1, '地图id错误！');
   } else if (axisX === undefined || axisY === undefined) {
     return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4__utils_dealRes__["a" /* default */])(res, 1, '地点坐标异常！');
-  } else if (!(type === '01' || type === '02' || type === '03')) {
+  } else if (!(type === '01' || type === '02' || type === '03' || type === '04' || type === '05')) {
     return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4__utils_dealRes__["a" /* default */])(res, 1, '地点类型错误！');
   }
 
@@ -897,6 +899,27 @@ router.put('/', (req, res) => {
         // 释放连接池
         connection.release();
         return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4__utils_dealRes__["a" /* default */])(res, 0, '修改成功');
+      });
+    });
+  } catch (e) {
+    return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4__utils_dealRes__["a" /* default */])(res, 1, 'internal error');
+  }
+});
+
+router.delete('/', (req, res) => {
+  const { id } = req.query;
+  if (id === undefined || parseInt(id, 10) != id) {
+    return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4__utils_dealRes__["a" /* default */])(res, 1, '地图id错误！');
+  }
+
+  try {
+    pool.getConnection((err1, connection) => {
+      if (err1) throw new Error(err1);
+      connection.query(__WEBPACK_IMPORTED_MODULE_3__db_locationSQL__["a" /* default */].deleteById, [id], (err2, result) => {
+        if (err2) throw new Error(err2);
+        // 释放连接池
+        connection.release();
+        return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4__utils_dealRes__["a" /* default */])(res, 0, '删除成功');
       });
     });
   } catch (e) {
@@ -997,7 +1020,7 @@ const handleLocation = (() => {
 })();
 
 // 获取分页
-router.get('/', (req, res) => {
+router.get('/list', (req, res) => {
   let { page, pageSize } = req.query;
   const { name } = req.query;
   page = parseInt(page, 10);
@@ -1034,6 +1057,32 @@ router.get('/', (req, res) => {
           }, err => {
             throw new Error(err);
           });
+        });
+      });
+    });
+  } catch (e) {
+    return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_6__utils_dealRes__["a" /* default */])(res, 1, 'internal error');
+  }
+});
+
+// 获取单个地图详情
+router.get('/', (req, res) => {
+  const { id } = req;
+  if (id === undefined || parseInt(id, 10) != id) {
+    return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_6__utils_dealRes__["a" /* default */])(res, 1, '地图id异常');
+  }
+
+  try {
+    pool.getConnection((err1, connection) => {
+      if (err1) throw err1;
+      connection.query(__WEBPACK_IMPORTED_MODULE_4__db_mapSQL__["a" /* default */].queryPage, [id], (err2, result) => {
+        if (err2) throw err2;
+        // 释放连接池
+        connection.release();
+        handleLocation(result).then(list => {
+          return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_6__utils_dealRes__["a" /* default */])(res, 0, list);
+        }, err => {
+          throw new Error(err);
         });
       });
     });
