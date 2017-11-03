@@ -107,7 +107,7 @@ router.get('/list', (req, res) => {
 
 // 获取单个地图详情
 router.get('/', (req, res) => {
-  const { id } = req
+  const { id } = req.query
   if (id === undefined || parseInt(id, 10) != id) {
     return dealRes(res, 1, '地图id异常')
   }
@@ -115,7 +115,7 @@ router.get('/', (req, res) => {
   try {
     pool.getConnection((err1, connection) => {
       if (err1) throw err1
-      connection.query(mapSQL.queryPage, [id], (err2, result) => {
+      connection.query(mapSQL.query, [id], (err2, result) => {
         if (err2) throw err2
         // 释放连接池
         connection.release()

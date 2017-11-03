@@ -63,7 +63,7 @@ router.post('/', (req, res) => {
 router.put('/', (req, res) => {
   const { id, name, mapId, axisX, axisY, type } = req.body
 
-  if (id === undefined || parseInt(id, 10) !== id) {
+  if (id === undefined || parseInt(id, 10) != id) {
     return dealRes(res, 1, '地点id异常')
   } else if (name === undefined) {
     return dealRes(res, 1, '地点名称不能为空！')

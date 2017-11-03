@@ -879,7 +879,7 @@ router.post('/', (req, res) => {
 router.put('/', (req, res) => {
   const { id, name, mapId, axisX, axisY, type } = req.body;
 
-  if (id === undefined || parseInt(id, 10) !== id) {
+  if (id === undefined || parseInt(id, 10) != id) {
     return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4__utils_dealRes__["a" /* default */])(res, 1, '地点id异常');
   } else if (name === undefined) {
     return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4__utils_dealRes__["a" /* default */])(res, 1, '地点名称不能为空！');
@@ -1067,7 +1067,7 @@ router.get('/list', (req, res) => {
 
 // 获取单个地图详情
 router.get('/', (req, res) => {
-  const { id } = req;
+  const { id } = req.query;
   if (id === undefined || parseInt(id, 10) != id) {
     return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_6__utils_dealRes__["a" /* default */])(res, 1, '地图id异常');
   }
@@ -1075,7 +1075,7 @@ router.get('/', (req, res) => {
   try {
     pool.getConnection((err1, connection) => {
       if (err1) throw err1;
-      connection.query(__WEBPACK_IMPORTED_MODULE_4__db_mapSQL__["a" /* default */].queryPage, [id], (err2, result) => {
+      connection.query(__WEBPACK_IMPORTED_MODULE_4__db_mapSQL__["a" /* default */].query, [id], (err2, result) => {
         if (err2) throw err2;
         // 释放连接池
         connection.release();
