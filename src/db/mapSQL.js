@@ -10,6 +10,10 @@ const mapSQL = {
   + ' *'
   + ' FROM map AS m'
   + ' WHERE m.name LIKE ? LIMIT ?,?',
+  query: 'SELECT'
+  + ' *'
+  + ' FROM map AS m'
+  + ' WHERE m.id = ?',
   count: 'SELECT COUNT(*) AS total FROM map',
 }
 

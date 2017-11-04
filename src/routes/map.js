@@ -60,7 +60,7 @@ const handleLocation = async (list) => {
 }
 
 // 获取分页
-router.get('/', (req, res) => {
+router.get('/list', (req, res) => {
   let { page, pageSize } = req.query
   const { name } = req.query
   page = parseInt(page, 10)
@@ -97,6 +97,32 @@ router.get('/', (req, res) => {
           }, (err) => {
             throw new Error(err)
           })
+        })
+      })
+    })
+  } catch (e) {
+    return dealRes(res, 1, 'internal error')
+  }
+})
+
+// 获取单个地图详情
+router.get('/', (req, res) => {
+  const { id } = req.query
+  if (id === undefined || parseInt(id, 10) != id) {
+    return dealRes(res, 1, '地图id异常')
+  }
+
+  try {
+    pool.getConnection((err1, connection) => {
+      if (err1) throw err1
+      connection.query(mapSQL.query, [id], (err2, result) => {
+        if (err2) throw err2
+        // 释放连接池
+        connection.release()
+        handleLocation(result).then((list) => {
+          return dealRes(res, 0, list)
+        }, (err) => {
+          throw new Error(err)
         })
       })
     })
