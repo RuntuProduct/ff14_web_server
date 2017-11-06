@@ -1,6 +1,6 @@
 const locationSQL = {
   insert: 'INSERT'
-  + ' INTO locaiton(name, mapId, axisX, axisY, type)'
+  + ' INTO location(name, mapId, axisX, axisY, type)'
   + ' VALUES(?,?,?,?,?)',
   update: 'UPDATE'
   + ' location'
