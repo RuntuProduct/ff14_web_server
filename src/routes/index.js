@@ -9,6 +9,7 @@ import formula from './formula'
 import notes from './notes'
 import map from './map'
 import location from './location'
+import collection from './collection'
 
 const router = (app) => {
   app.get('/', (req, res, next) => {
@@ -33,6 +34,7 @@ const router = (app) => {
   app.use('/api/notes', notes)
   app.use('/api/map', map)
   app.use('/api/location', location)
+  app.use('/api/collection', collection)
 }
 
 export default router
