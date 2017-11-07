@@ -10,7 +10,7 @@ const pool = mysql.createPool(dbConfig.mysql)
 
 const getMat = (val, connection) => {
   return new Promise((resolve, reject) => {
-    connection.query(collectionSQL.queryMatByName, [val], (err2, result) => {
+    connection.query(collectionSQL.queryMatByName, [`%${val}%`], (err2, result) => {
       if (err2) throw new Error(err2)
       resolve(result)
     })
@@ -19,38 +19,47 @@ const getMat = (val, connection) => {
 
 const getFish = (val, connection) => {
   return new Promise((resolve, reject) => {
-    connection.query(collectionSQL.queryFishByName, [val], (err2, result) => {
+    connection.query(collectionSQL.queryFishByName, [`%${val}%`], (err2, result) => {
       if (err2) throw new Error(err2)
       resolve(result)
     })
   })
 }
 
-const getContent = (val) => {
-  pool.getConnection(async (err1, connection) => {
-    if (err1) { throw new Error(err1) }
-    const matAry = await getMat(val, connection)
-    const fishAry = await getFish(val, connection)
+const getContent = async (val, connection) => {
+  const matAry = await getMat(val, connection)
+  const fishAry = await getFish(val, connection)
+  console.log('matAry', matAry)
+  console.log('fishAry', fishAry)
 
-    return [{
-      title: 'material',
-      children: matAry,
-    }, {
-      title: 'fish',
-      children: fishAry,
-    }]
-  })
+  return [{
+    title: 'material',
+    type: '01',
+    children: matAry,
+  }, {
+    title: 'fish',
+    type: '02',
+    children: fishAry,
+  }]
 }
 
 router.get('/query', (req, res) => {
   const { val } = req.query
-  if (val !== undefined || !val) {
-    return dealRes(res, 1, '')
+  if (val === undefined || !val) {
+    return dealRes(res, 1, '搜索关键字不能为空')
   }
 
   try {
-    const tar = getContent(val)
-    console.log(tar)
+    pool.getConnection((err1, connection) => {
+      if (err1) { throw new Error(err1) }
+      getContent(val, connection)
+        .then((suc) => {
+          return dealRes(res, 0, suc)
+        })
+        .catch((err2) => {
+          return dealRes(res, 1, '内部错误')
+        })
+    })
   } catch (e) {
     return dealRes(res, 1, 'internal error')
   }
