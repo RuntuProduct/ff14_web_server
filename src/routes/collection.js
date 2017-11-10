@@ -29,15 +29,13 @@ const getFish = (val, connection) => {
 const getContent = async (val, connection) => {
   const matAry = await getMat(val, connection)
   const fishAry = await getFish(val, connection)
-  console.log('matAry', matAry)
-  console.log('fishAry', fishAry)
+  // console.log('matAry', matAry)
+  // console.log('fishAry', fishAry)
 
   return [{
-    title: 'material',
     type: '01',
     children: matAry,
   }, {
-    title: 'fish',
     type: '02',
     children: fishAry,
   }]
@@ -45,6 +43,7 @@ const getContent = async (val, connection) => {
 
 router.get('/query', (req, res) => {
   const { val } = req.query
+  console.log(val)
   if (val === undefined || !val) {
     return dealRes(res, 1, '搜索关键字不能为空')
   }
