@@ -1,11 +1,11 @@
-import path from 'path';
-import webpack from 'webpack';
-import pkg from '../package.json';
+import path from 'path'
+import webpack from 'webpack'
+import pkg from '../package.json'
 
-const isDebug = !process.argv.includes('--release');
-const isVerbose = process.argv.includes('--verbose');
+const isDebug = !process.argv.includes('--release')
+const isVerbose = process.argv.includes('--verbose')
 
-console.log(`Debug Model is: ${isDebug}`);
+console.log(`Debug Model is: ${isDebug}`)
 //
 // Common configuration chunk to be used for both
 // erver-side (server.js) bundles
@@ -72,7 +72,7 @@ const config = {
     cached: isVerbose,
     cachedAssets: isVerbose,
   },
-};
+}
 
 //
 // Configuration for the server-side bundle (server.js)
@@ -158,6 +158,6 @@ const serverConfig = {
   },
 
   devtool: isDebug ? 'cheap-module-source-map' : 'source-map',
-};
+}
 
-export default [serverConfig];
+export default [serverConfig]
