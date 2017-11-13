@@ -114,9 +114,13 @@ router.get('/query', (req, res) => {
       // 获取搜索结果
       getContent(val, connection)
         .then((suc) => {
+          // 释放连接池
+          connection.release()
           return dealRes(res, 0, suc)
         })
         .catch((err2) => {
+          // 释放连接池
+          connection.release()
           return dealRes(res, 1, '内部错误')
         })
     })
@@ -141,9 +145,13 @@ router.get('/', (req, res) => {
         // 根据collcetion 列表获取详情
         getColDetail(result, connection)
           .then((suc) => {
+            // 释放连接池
+            connection.release()
             return dealRes(res, 0, suc)
           })
           .catch((err3) => {
+            // 释放连接池
+            connection.release()
             return dealRes(res, 1, '内部错误')
           })
       })
