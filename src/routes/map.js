@@ -55,7 +55,7 @@ const handleLocation = async (list) => {
       result[i].positionAry = []
     }
   }
-  console.log(result)
+  // console.log(result)
   return result
 }
 

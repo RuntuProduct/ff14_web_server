@@ -26,6 +26,7 @@ const getFish = (val, connection) => {
   })
 }
 
+// 获取搜索结果
 const getContent = async (val, connection) => {
   const matAry = await getMat(val, connection)
   const fishAry = await getFish(val, connection)
@@ -41,9 +42,68 @@ const getContent = async (val, connection) => {
   }]
 }
 
+const getMatDetail = (ary, connection) => {
+  const ids = ary.map(da => da.tarId)
+  return new Promise((resolve, reject) => {
+    if (ids.length) {
+      connection.query(collectionSQL.queryMatByIds, [ids], (err, result) => {
+        if (err) { reject(err) }
+        for (let i = 0; i < ary.length; i += 1) {
+          const { tarId } = ary[i]
+          const tar = result.filter(da => da.id == tarId)
+          if (tar.length) {
+            delete tar[0].id
+            Object.assign(ary[i], tar[0])
+          }
+        }
+        resolve(ary)
+      })
+    } else {
+      resolve([])
+    }
+  })
+}
+
+const getFishDetail = (ary, connection) => {
+  const ids = ary.map(da => da.tarId)
+  return new Promise((resolve, reject) => {
+    if (ids.length) {
+      connection.query(collectionSQL.queryFIshByIds, [ids], (err, result) => {
+        if (err) { reject(err) }
+        for (let i = 0; i < ary.length; i += 1) {
+          const { tarId } = ary[i]
+          const tar = result.filter(da => da.id == tarId)
+          if (tar.length) {
+            delete tar[0].id
+            Object.assign(ary[i], tar[0])
+          }
+        }
+        resolve(ary)
+      })
+    } else {
+      resolve([])
+    }
+  })
+}
+
+// 获取采集物详情
+const getColDetail = async (res, connection) => {
+  // console.log('result', res)
+  const matPart = res.filter(da => da.tarType === '01')
+  const fishPart = res.filter(da => da.tarType === '02')
+  const matAry = await getMatDetail(matPart, connection)
+  const fishAry = await getFishDetail(fishPart, connection)
+  // console.log('matAry', matAry)
+  // console.log('fishAry', fishAry)
+  const result = [].concat(matAry, fishAry)
+
+  return result
+}
+
+// 根据关键字搜索采集物
 router.get('/query', (req, res) => {
   const { val } = req.query
-  console.log(val)
+  // console.log(val)
   if (val === undefined || !val) {
     return dealRes(res, 1, '搜索关键字不能为空')
   }
@@ -51,6 +111,7 @@ router.get('/query', (req, res) => {
   try {
     pool.getConnection((err1, connection) => {
       if (err1) { throw new Error(err1) }
+      // 获取搜索结果
       getContent(val, connection)
         .then((suc) => {
           return dealRes(res, 0, suc)
@@ -58,6 +119,34 @@ router.get('/query', (req, res) => {
         .catch((err2) => {
           return dealRes(res, 1, '内部错误')
         })
+    })
+  } catch (e) {
+    return dealRes(res, 1, 'internal error')
+  }
+})
+
+// 根据loId获取采集物列表
+router.get('/', (req, res) => {
+  const { loId } = req.query
+
+  if (loId === undefined || parseInt(loId, 10) != loId) {
+    return dealRes(res, 1, '地点id异常')
+  }
+
+  try {
+    pool.getConnection((err1, connection) => {
+      if (err1) { throw new Error(err1) }
+      connection.query(collectionSQL.queryByloId, [loId], (err2, result) => {
+        if (err2) { throw new Error(err2) }
+        // 根据collcetion 列表获取详情
+        getColDetail(result, connection)
+          .then((suc) => {
+            return dealRes(res, 0, suc)
+          })
+          .catch((err3) => {
+            return dealRes(res, 1, '内部错误')
+          })
+      })
     })
   } catch (e) {
     return dealRes(res, 1, 'internal error')
@@ -91,6 +180,7 @@ router.post('/', (req, res) => {
   }
 })
 
+// 删除采集方式
 router.delete('/', (req, res) => {
   const { id } = req.query
   if (id === undefined || parseInt(id, 10) != id) {
