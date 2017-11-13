@@ -4,11 +4,16 @@ import http from 'http'
 import consolidate from 'consolidate'
 import bodyParser from 'body-parser'
 import compression from 'compression' // gzip压缩插件
+import debugObj from 'debug'
 import { port } from './config'
 import Router from './routes/index'
 
 const app = express()
 const isDev = app.get('env') !== 'production'
+
+// const debug = debugObj('express')
+// debugObj.enable('express')
+// debug.log = console.info.bind(console)
 
 app.use(compression()) // 启用 gzip压缩
 
