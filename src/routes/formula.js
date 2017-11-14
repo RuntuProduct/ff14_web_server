@@ -9,7 +9,7 @@ const router = express.Router()
 // 使用数据库配置信息创建一个MySQL链接池
 const pool = mysql.createPool(dbConfig.mysql)
 
-const getTarAry = (ary, type) => {
+const getTarAry = (ary, type, connection) => {
   return new Promise((resolve, reject) => {
     try {
       const ids = ary.filter(da => da.tarType == type).map(da => da.tarId)
@@ -25,18 +25,14 @@ const getTarAry = (ary, type) => {
       }
       // console.log(query, ids)
 
-      pool.getConnection((err1, connection) => {
-        if (err1) throw new Error(err1)
-        if (ids.length) {
-          connection.query(query, [ids], (err2, result) => {
-            if (err2) throw new Error(err2)
-            connection.release()
-            resolve(result)
-          })
-        } else {
-          resolve([])
-        }
-      })
+      if (ids.length) {
+        connection.query(query, [ids], (err2, result) => {
+          if (err2) throw new Error(err2)
+          resolve(result)
+        })
+      } else {
+        resolve([])
+      }
     } catch (e) {
       reject(e)
     }
@@ -70,10 +66,10 @@ const mixinAry = (ary, mat, pro, fish) => {
 }
 
 // 处理配方数据
-const getFormula = async (ary) => {
-  const materialAry = await getTarAry(ary, '01')
-  const productAry = await getTarAry(ary, '02')
-  const fishAry = await getTarAry(ary, '03')
+const getFormula = async (ary, connection) => {
+  const materialAry = await getTarAry(ary, '01', connection)
+  const productAry = await getTarAry(ary, '02', connection)
+  const fishAry = await getTarAry(ary, '03', connection)
   // console.log(fishAry, productAry, materialAry)
   return mixinAry(ary, materialAry, productAry, fishAry)
 }
@@ -95,10 +91,14 @@ router.get('/', (req, res) => {
           const productObj = result1[0]
           // 获取配方集合
           connection.query(formulaSQL.getFormulaByPid, [pid], (err3, result2) => {
-            if (err3) { throw new Error(err3) }
+            if (err3) {
+              // 释放连接池
+              connection.release()
+              throw new Error(err3)
+            }
             if (result2 && result2.length) {
               // 处理配方数据
-              getFormula(result2).then((formula) => {
+              getFormula(result2, connection).then((formula) => {
                 // console.log('formula:', formula)
                 // 释放连接池
                 connection.release()
@@ -107,6 +107,8 @@ router.get('/', (req, res) => {
                   formula,
                 })
               }, (err4) => {
+                // 释放连接池
+                connection.release()
                 throw new Error(err4)
               })
             } else {
@@ -130,6 +132,7 @@ router.get('/', (req, res) => {
   }
 })
 
+// 添加配方
 router.post('/', (req, res) => {
   const { pid, tarId, tarType, num } = req.body
 
@@ -156,6 +159,56 @@ router.post('/', (req, res) => {
           connection.release()
           return dealRes(res, 1, '该材料已存在！')
         }
+      })
+    })
+  } catch (e) {
+    return dealRes(res, 1, 'internal error')
+  }
+})
+
+// 编辑配方
+router.put('/', (req, res) => {
+  const { id, num } = req.body
+
+  if (id === undefined || num === undefined || parseInt(num, 10) != num) {
+    return dealRes(res, 1, '信息错误！')
+  }
+
+  try {
+    pool.getConnection((err1, connection) => {
+      if (err1) {
+        throw new Error(err1)
+      }
+      connection.query(formulaSQL.update, [num, id], (err3, result2) => {
+        if (err3) throw new Error(err3)
+        // 释放连接池
+        connection.release()
+        return dealRes(res, 0, '修改成功')
+      })
+    })
+  } catch (e) {
+    return dealRes(res, 1, 'internal error')
+  }
+})
+
+// 删除配方
+router.delete('/', (req, res) => {
+  const { id } = req.query
+
+  if (id === undefined || parseInt(id, 10) != id) {
+    return dealRes(res, 1, '缺少配方id！')
+  }
+
+  try {
+    pool.getConnection((err1, connection) => {
+      if (err1) {
+        throw new Error(err1)
+      }
+      connection.query(formulaSQL.delete, [id], (err3, result2) => {
+        if (err3) throw new Error(err3)
+        // 释放连接池
+        connection.release()
+        return dealRes(res, 0, '删除成功')
       })
     })
   } catch (e) {
